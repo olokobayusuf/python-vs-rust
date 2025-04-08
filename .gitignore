@@ -1,0 +1,11 @@
+# Python
+__pycache__
+
+# Rust
+debug/
+target/
+rust-peek.rep
+Cargo.lock
+
+# Misc
+.DS_Store

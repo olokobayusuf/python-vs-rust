@@ -1,0 +1,15 @@
+[package]
+name = "fma_rs"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "fma_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+
+[profile.release]
+opt-level = 1 # 2+ will optimize out the loop
+lto = true
+debug = false
