@@ -7,8 +7,8 @@ from rich.table import Table
 from timeit import timeit
 
 # Benchmark config
-runs = 200
-n_iter = 1_000_000
+runs = 100
+n_iters = [10 ** n for n in range(3, 7)]
 fxn = Function()
 
 # Import plain Python implementation
@@ -39,25 +39,21 @@ def rust_fma (x, y, z, n_iter):
 
 # Create output table
 table = Table(title="FMA Benchmarks")
-table.add_column("Benchmark", style="cyan")
-table.add_column("Total (ms)", style="magenta")
-table.add_column("Avg (ms)", style="green")
+table.add_column("n_iter", header_style="hot_pink italic")
+table.add_column("Python (avg ms)", style="magenta")
+table.add_column("Rust (avg ms)", style="blue1")
+table.add_column("Compiled Python (avg ms)", style="green")
 
 # Run benchmarks
-BENCHMARK_MAP = {
-    "Python": python_fma,
-    "Python (Compiled with Function)": python_compiled_fma,
-    "Rust": rust_fma
-}
-for name, fma_func in BENCHMARK_MAP.items():
-    total_s = timeit(
+FMA_FUNCS = [python_fma, rust_fma, python_compiled_fma]
+for n_iter in n_iters:
+    total_times = [timeit(
         lambda: fma_func(12, 34, 5, n_iter),
         setup=lambda: fma_func(1, 2, 3, 1),
         number=runs
-    )
-    total_ms = total_s * 1_000
-    avg_ms = total_ms / runs
-    table.add_row(name, f"{total_ms}", f"{avg_ms}")
+    ) for fma_func in FMA_FUNCS]
+    avg_times = [f"{time_s * 1_000 / runs}" for time_s in total_times]
+    table.add_row(f"{n_iter}", *avg_times)
 
 # Print result
 console = Console()
